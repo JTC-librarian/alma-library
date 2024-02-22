@@ -1,6 +1,6 @@
 These are scripts that I have written and used in my role as Discovery and Systems Manager at Solent University Library. I am a librarian who does some scripting for his job; I AM NOT A PROFESSIONAL SOFTWARE DEVELOPER, so the scripts are certainly unsophisticated and probably flawed in some way. However, they have all been used many times at Solent University, so it struck me that they may be of use to others. Indeed, the fact that they were written by an amateur may make them of more use to other amateur scripters than professional code - they may be more comprehensible.
 
-That said, you use these scripts at your own risk. You'll need to know Python basics before using them (and have Python installed), and you should read through the code to make sure it does what you want. You should also check out the Alma API docs on the ExLibris Developer Zone. 
+That said, you use these scripts at your own risk. I have edited some of them without then testing - I'll do that when I have a use case - so errors may have crept in. You'll need to know Python basics before using them (and have Python installed), and you should read through the code to make sure it does what you want. You should also check out the Alma API docs on the ExLibris Developer Zone. 
 
 There is a main file, alma.py, that serves as a module file. In here I include small functions that I use repeatedly. When I want to do a specific project, I call this file with the following lines of code in my project script:
 
