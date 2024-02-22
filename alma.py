@@ -70,7 +70,7 @@ def deleteUrl(url):
         print(e.read())
 
 
-    
+
 
 ### Other Internal Functions ###
 def getRowset(text_string):
@@ -97,28 +97,10 @@ def isFinished(text_string):
     else:
         return False
 
-def removeApikey(string):
-    string = string.replace(api_key, "{api_key}")
-    return string
-
 def sendUpdate(setid, membersxml):
-    errorfile = open('update_set.error', 'a+', encoding='utf8', errors='ignore')
-    headers = {"Content-type": "application/xml"}
-    op = "&op=add_members"
-    api_query = "/almaws/v1/conf/sets/" + setid + "?apikey="
-    url = api_base + api_query + api_key + op
-    print(url)
-    api_base_minus_https = api_base.replace("https://", "")
-    conn = http.client.HTTPSConnection(api_base_minus_https)
-    conn.set_debuglevel(1)
-    conn.request("POST", url, membersxml, headers)
-    response = conn.getresponse()
-    print(response.status, response.reason)
-    data = response.read()
-    unicode_data = data.decode("utf8")
-    data_string = str(unicode_data)
-    errorfile.write(data_string + "\n")
-    conn.close()
+    api_query = "/almaws/v1/conf/sets/" + setid + "?op=add_members"
+    url = api_base + api_query
+    postUrl(url, membersxml):
 
 ### Acquisitions functions ###
 def get_vendor(code):
@@ -271,7 +253,7 @@ def delete_item(bib_id, hol_id, item_id, override): ## Returns nothing, but dele
 def create_item(mms_id, holding_id, xml_in_bytes): ## Returns nothing, but creates item
     api_query = "/almaws/v1/bibs/" + mms_id + "/holdings/" + holding_id + "/items"
     url = api_base + api_query
-    postUrl(url)
+    postUrl(url, xml_in_bytes)
 
 
 
@@ -284,8 +266,8 @@ def get_set_members(set_id):
     member_list = []
     running = True
     while running:
-        api_query = "/almaws/v1/conf/sets/" + set_id + "/members?limit=" + str(limit) + "&offset=" + str(offset) + "&apikey="
-        url = api_base + api_query + api_key
+        api_query = "/almaws/v1/conf/sets/" + set_id + "/members?limit=" + str(limit) + "&offset=" + str(offset)
+        url = api_base + api_query
         print(url)
         result = getUrl(url)
         count = 0
@@ -310,8 +292,8 @@ def get_set_member_id_list(set_id):
         limit = 100
         running = True
         while running:
-            api_query = "/almaws/v1/conf/sets/" + set_id + "/members?limit=" + str(limit) + "&offset=" + str(offset) + "&apikey="
-            url = api_base + api_query + api_key
+            api_query = "/almaws/v1/conf/sets/" + set_id + "/members?limit=" + str(limit) + "&offset=" + str(offset)
+            url = api_base + api_query
             print(url)
             result = getUrl(url)
             count = 0
@@ -353,14 +335,14 @@ def update_set(setid, newmembers_list): ## Returns nothing but updates a set. Ma
         sendUpdate(setid, membersxml)
 
 def get_all_rs_partners():
-    api_query = "/almaws/v1/partners?apikey="
-    limit = "&limit=100"
+    api_query = "/almaws/v1/partners?limit="
+    limit = "100"
     offset_string = "&offset="
     offset_value = 0
     running = True
     partners_string = '<?xml version="1.0" encoding="UTF-8" standalone="yes"?><partners>'
     while running:
-        url = api_base + api_query + api_key + limit + offset_string + str(offset_value)
+        url = api_base + api_query + limit + offset_string + str(offset_value)
         print(url)
         text_string = getUrl(url)
         root = ET.fromstring(text_string)
@@ -378,19 +360,13 @@ def get_all_rs_partners():
     return partners_string
 
 def update_rs_partner(partner_code, xml_in_bytes):
-    api_query = "/almaws/v1/partners/" + partner_code + "?apikey="
-    url = api_base + api_query + api_key
-    req = urllib.request.Request(url=url, data=xml_in_bytes, headers={'Content-Type': 'application/xml'}, method='PUT')
-    try:
-        put = urllib.request.urlopen(req)
-        print(str(put.status) + " " + put.reason)
-    except Exception as e:
-        print(str(e))
-        print(e.read())
+    api_query = "/almaws/v1/partners/" + partner_code
+    url = api_base + api_query
+    putUrl(url, xml_in_bytes)
 
 def get_code_table(code_table):
-    api_query = "/almaws/v1/conf/code-tables/" + code_table + "?apikey="
-    url = api_base + api_query + api_key
+    api_query = "/almaws/v1/conf/code-tables/" + code_table
+    url = api_base + api_query
     print(url)
     result = getUrl(url)
     return result
@@ -400,8 +376,8 @@ def get_code_table(code_table):
 ### Acquistions related functions ###
 def get_poline(pol_id):
     errorfile = open('get_poline.error', 'a+', encoding='utf8', errors='ignore')
-    api_query = "/almaws/v1/acq/po-lines/" + pol_id + "?apikey="
-    url = api_base + api_query + api_key
+    api_query = "/almaws/v1/acq/po-lines/" + pol_id
+    url = api_base + api_query
     print(url)
     try:
         result = getUrl(url)
@@ -412,26 +388,15 @@ def get_poline(pol_id):
     return result
 
 def update_poline(pol_id, xml_in_bytes):
-    api_query = "/almaws/v1/acq/po-lines/" + pol_id + "?apikey="
-    url = api_base + api_query + api_key
-    req = urllib.request.Request(url=url, data=xml_in_bytes, headers={'Content-Type': 'application/xml'}, method='PUT')
-    try:
-        put = urllib.request.urlopen(req)
-        print(str(put.status) + " " + put.reason)
-    except Exception as e:
-        print(str(e))
-        print(e.read())
+    api_query = "/almaws/v1/acq/po-lines/" + pol_id
+    url = api_base + api_query
+    putUrl(url, xml_in_bytes)
 
 def create_poline(xml_in_bytes):
-    api_query = "/almaws/v1/acq/po-lines/?apikey="
-    url = api_base + api_query + api_key
+    api_query = "/almaws/v1/acq/po-lines/"
+    url = api_base + api_query
     req = urllib.request.Request(url=url, data=xml_in_bytes, headers={'Content-Type': 'application/xml'}, method='POST')
-    try:
-        post = urllib.request.urlopen(req)
-        print(str(post.status) + " " + post.reason)
-    except Exception as e:
-        print(str(e))
-        print(e.read())
+    postUrl(url, xml_in_bytes)
 
 
 
@@ -439,7 +404,7 @@ def create_poline(xml_in_bytes):
 ### User related functions
 def get_user_list():
     errorfile = open('get_user_list.error', 'a+', encoding='utf8', errors='ignore')
-    api_query = "/almaws/v1/users?limit=100&apikey="
+    api_query = "/almaws/v1/users?limit=100"
     offset = "&offset="
     user_list = []
     benchmark = -1
@@ -447,7 +412,7 @@ def get_user_list():
         print(len(user_list))
         benchmark = len(user_list)
         count = str(len(user_list))
-        url = api_base + api_query + api_key + offset + count
+        url = api_base + api_query + offset + count
         print(url)
         result = getUrl(url)
         root = ET.fromstring(result)
@@ -465,23 +430,17 @@ def get_user_list():
 def get_user_loans(user_id):
     # Note that it is limited to 100 loans. Would need to repeat queries 
     errorfile = open('get_user_loans.error', 'a+', encoding='utf8', errors='ignore')
-    api_query = "/almaws/v1/users/" + user_id + "/loans?limit=100&apikey="
-    url = api_base + api_query + api_key
+    api_query = "/almaws/v1/users/" + user_id + "/loans?limit=100"
+    url = api_base + api_query
     print(url)
     result = getUrl(url)
     return result
 
 def update_item_loan(user_id, loan_id, item_loan_xml):
-    api_query = "/almaws/v1/users/" + user_id + "/loans/" + loan_id + "?apikey="
-    url = api_base + api_query + api_key
+    api_query = "/almaws/v1/users/" + user_id + "/loans/" + loan_id
+    url = api_base + api_query
     new_item_loan = ET.tostring(item_loan_xml)
-    req = urllib.request.Request(url=url, data=new_item_loan, headers={'Content-Type': 'application/xml'}, method='PUT')
-    try:
-        put = urllib.request.urlopen(req)
-        print(str(put.status) + " " + put.reason)
-    except Exception as e:
-        print(str(e))
-        print(e.read())
+    putUrl(url, new_item_loan)
 
 def change_loan_due_dates(user_id, due_date):
     ## Give due_Date in the format: 2021-03-27T23:59:00Z
@@ -499,44 +458,38 @@ def change_loan_due_dates(user_id, due_date):
                 child.text = due_date
         new_item_loan = ET.tostring(item_loan)
         #print(ET.tostring(item_loan, 'utf8'))
-        api_query = "/almaws/v1/users/" + user_id + "/loans/" + loan_id + "?apikey="
-        url = api_base + api_query + api_key
-        req = urllib.request.Request(url=url, data=new_item_loan, headers={'Content-Type': 'application/xml'}, method='PUT')
-        try:
-            put = urllib.request.urlopen(req)
-            print(str(put.status) + " " + put.reason)
-        except Exception as e:
-            print(str(e))
-            print(e.read())
-        
+        api_query = "/almaws/v1/users/" + user_id + "/loans/" + loan_id
+        url = api_base + api_query
+        putUrl(url, new_item_loan)
+
 def get_user_fines(user_id):
     errorfile = open('get_user_fines.error', 'a+', encoding='utf8', errors='ignore')
-    api_query = "/almaws/v1/users/" + user_id + "/fees?apikey="
-    url = api_base + api_query + api_key
+    api_query = "/almaws/v1/users/" + user_id + "/fees"
+    url = api_base + api_query
     print(url)
     result = getUrl(url)
     return result
 
 def get_user_requests(user_id):
     errorfile = open('get_user_requests.error', 'a+', encoding='utf8', errors='ignore')
-    api_query = "/almaws/v1/users/" + user_id + "/requests?apikey="
-    url = api_base + api_query + api_key
+    api_query = "/almaws/v1/users/" + user_id + "/requests"
+    url = api_base + api_query
     print(url)
     result = getUrl(url)
     return result
 
 def get_user_request(user_id, request_id):
     errorfile = open('get_user_requests.error', 'a+', encoding='utf8', errors='ignore')
-    api_query = "/almaws/v1/users/" + user_id + "/requests/" + request_id + "?apikey="
-    url = api_base + api_query + api_key
+    api_query = "/almaws/v1/users/" + user_id + "/requests/" + request_id
+    url = api_base + api_query
     print(url)
     result = getUrl(url)
     return result 
 
 def get_user_record(user_id):
     errorfile = open('get_user_record.error', 'a+', encoding='utf8', errors='ignore')
-    api_query = "/almaws/v1/users/" + user_id + "?apikey="
-    url = api_base + api_query + api_key
+    api_query = "/almaws/v1/users/" + user_id
+    url = api_base + api_query
     print(url)
     result = getUrl(url)
     return result
@@ -568,16 +521,9 @@ def delete_user(user_id, latest_expiry_date):
         if expiry_date <= benchmark_date:
             print("Delete " + user_id)
             logfile.write("Delete " + user_id + "\n")
-            api_query = "/almaws/v1/users/" + user_id + "?apikey="
-            url = api_base + api_query + api_key
-            req = urllib.request.Request(url=url, method='DELETE')
-            try:
-                put = urllib.request.urlopen(req)
-                print(str(put.status) + " " + put.reason)
-                logfile.write(str(put.status) + " " + put.reason + "\n")
-            except Exception as e:
-                print(str(e))
-                logfile.write("Error: " + str(e) + "\n")
+            api_query = "/almaws/v1/users/" + user_id
+            url = api_base + api_query
+            deleteUrl(url)
 
 def delete_title_request(bib_id, req_id, reasonCode, notifyBoolean):
     ## The notifyBoolean should be a string - "true" or "false".
@@ -585,13 +531,8 @@ def delete_title_request(bib_id, req_id, reasonCode, notifyBoolean):
     ## I tend to use "CannotBeFulfilled" as a default
     api_query = "/almaws/v1/bibs/" + bib_id + "/requests/" + req_id + "?reason=" + reasonCode + "&notify_user=" + notifyBoolean
     url = api_base + api_query
-    req = urllib.request.Request(url=url, data=None, headers=headers, method='DELETE')
-    try:
-        put = urllib.request.urlopen(req)
-        print(str(put.status) + " " + put.reason)
-    except Exception as e:
-        print(str(e))
-        print(e.read())
+    deleteUrl(url)
+
 
 
 
