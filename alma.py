@@ -100,7 +100,7 @@ def isFinished(text_string):
 def sendUpdate(setid, membersxml):
     api_query = "/almaws/v1/conf/sets/" + setid + "?op=add_members"
     url = api_base + api_query
-    postUrl(url, membersxml):
+    postUrl(url, membersxml)
 
 ### Acquisitions functions ###
 def get_vendor(code):
@@ -374,17 +374,17 @@ def get_code_table(code_table):
 
 
 ### Acquistions related functions ###
-def get_poline(pol_id):
-    errorfile = open('get_poline.error', 'a+', encoding='utf8', errors='ignore')
+def get_poline(pol_id, *args): ## Use *args for the expand parameter. Can currently add either "notes" or "locations"
     api_query = "/almaws/v1/acq/po-lines/" + pol_id
+    if args:
+        arg_string = "?expand="
+        for arg in args:
+            arg_string = arg_string + arg + ","
+        arg_string = arg_string[0:-1]
+        api_query = api_query + arg_string
     url = api_base + api_query
     print(url)
-    try:
-        result = getUrl(url)
-    except:
-        errorfile.write("No record found: " + pol_id + "\n")
-        print("No record found: " + pol_id)
-        result = ""
+    result = getUrl(url)
     return result
 
 def update_poline(pol_id, xml_in_bytes):
